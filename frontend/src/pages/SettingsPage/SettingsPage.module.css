@@ -1,0 +1,70 @@
+.settingsPage {
+    min-height: 100vh;
+    background: #0b1220;
+    color: white;
+    padding: 40px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #94a3b8;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #182235;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.card h2 {
+    margin: 0;
+}
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.infoRow:last-child {
+    border-bottom: none;
+}
+
+.infoRow span {
+    color: #94a3b8;
+}
+
+.infoRow strong {
+    color: white;
+}
+.logoutButton {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #ef4444;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.logoutButton:hover {
+    background: #dc2626;
+}
