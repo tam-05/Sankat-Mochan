@@ -1,0 +1,13 @@
+# Controls what gcloud uploads as Cloud Build source.
+# Its presence forces gcloud to include untracked files (e.g. Dockerfile)
+# instead of falling back to git-tracked-only upload + Buildpacks.
+.git/
+**/__pycache__/
+**/*.pyc
+backend/venv/
+backend/.env
+backend/*.db
+backend/static/
+frontend/node_modules/
+frontend/dist/
+*.log

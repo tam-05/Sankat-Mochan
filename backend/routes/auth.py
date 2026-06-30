@@ -56,11 +56,6 @@ def login(login_data: UserLogin, db: Session = Depends(get_db)):
             detail="Invalid credentials"
         )
     
-    print("Email:", login_data.email)
-    print("Plain password:", login_data.password)
-    print("Stored hash:", db_user.password)
-    print("Length of plain password:", len(login_data.password))
-
     if not verify_password(login_data.password, db_user.password):
         raise HTTPException(
             status_code=401,
@@ -69,8 +64,6 @@ def login(login_data: UserLogin, db: Session = Depends(get_db)):
     db_user.last_active = datetime.utcnow()
     db.commit()
     db.refresh(db_user)
-
-    print("LAST ACTIVE:", db_user.last_active)
 
     access_token = create_access_token(
         {"sub": db_user.email}

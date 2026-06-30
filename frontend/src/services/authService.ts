@@ -1,9 +1,5 @@
-import axios from "axios";
+import { API } from "./api";
 import type { LoginData, RegisterData } from "../types/auth";
-
-const API = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});
 
 export const loginUser = async (data: LoginData) => {
   const response = await API.post("/auth/login", data);

@@ -1,4 +1,5 @@
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from utils.security import hash_password
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -47,13 +48,6 @@ class TaskRequest(BaseModel):
     deadline: str
 
 
-@app.get("/")
-def home():
-    return {
-        "message": "Welcome to Sankat Mochan 🚀"
-    }
-
-
 @app.post("/generate-plan")
 def generate_plan(data: TaskRequest):
 
@@ -88,3 +82,19 @@ Return ONLY valid JSON in this format:
     return {
         "response": response.text
     }
+
+
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+
+
+# ponytail: serve the built React app same-origin; unmatched GETs fall back to
+# index.html so client-side routes (e.g. /dashboard) survive a hard refresh.
+@app.get("/{full_path:path}")
+def serve_spa(full_path: str):
+    candidate = os.path.normpath(os.path.join(STATIC_DIR, full_path))
+    if full_path and candidate.startswith(STATIC_DIR) and os.path.isfile(candidate):
+        return FileResponse(candidate)
+    index = os.path.join(STATIC_DIR, "index.html")
+    if os.path.isfile(index):
+        return FileResponse(index)
+    return {"message": "Welcome to Sankat Mochan 🚀"}

@@ -13,6 +13,9 @@ backend/.env
 backend/*.db
 *.db
 
+# Built frontend copied in by Docker build
+backend/static/
+
 # =========================
 # Node
 # =========================
