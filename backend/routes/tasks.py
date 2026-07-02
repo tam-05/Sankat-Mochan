@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from database.database import get_db
 from database.task_models import Task
+from database.models import User
+from utils.jwt_handler import get_current_user
 from datetime import datetime
 from database.task_schemas import (
     TaskCreate,
@@ -18,7 +20,8 @@ router = APIRouter(
 @router.post("/", response_model=TaskResponse)
 def create_task(
     task: TaskCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
 
     new_task = Task(
@@ -28,9 +31,7 @@ def create_task(
         due_date=task.due_date,
         roadmap_id=task.roadmap_id,
         goal=task.goal,
-        # Temporary
-        user_id=1
-       
+        user_id=user.id
     )
 
     db.add(new_task)
@@ -40,9 +41,12 @@ def create_task(
     return new_task
 
 @router.get("/", response_model=list[TaskResponse])
-def get_tasks(db: Session = Depends(get_db)):
+def get_tasks(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
 
-    tasks = db.query(Task).all()
+    tasks = db.query(Task).filter(Task.user_id == user.id).all()
 
     return tasks
 
@@ -50,10 +54,13 @@ def get_tasks(db: Session = Depends(get_db)):
 def update_task(
     task_id: int,
     task: TaskUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
 
-    db_task = db.query(Task).filter(Task.id == task_id).first()
+    db_task = db.query(Task).filter(
+        Task.id == task_id, Task.user_id == user.id
+    ).first()
 
     if not db_task:
         raise HTTPException(
@@ -81,10 +88,13 @@ def update_task(
 @router.delete("/{task_id}")
 def delete_task(
     task_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
 
-    db_task = db.query(Task).filter(Task.id == task_id).first()
+    db_task = db.query(Task).filter(
+        Task.id == task_id, Task.user_id == user.id
+    ).first()
 
     if not db_task:
         raise HTTPException(
@@ -100,9 +110,12 @@ def delete_task(
     }
 
 @router.post("/touch")
-def touch_tasks(db: Session = Depends(get_db)):
+def touch_tasks(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
 
-    tasks = db.query(Task).all()
+    tasks = db.query(Task).filter(Task.user_id == user.id).all()
 
     for task in tasks:
         task.updated_at = datetime.utcnow()

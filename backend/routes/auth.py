@@ -98,7 +98,12 @@ def activity_status(
             "falling_behind": False
         }
 
-    inactive_time = datetime.utcnow() - user.last_active
+    # Postgres returns tz-aware datetimes; normalize to naive UTC (as reminder.py does)
+    last_active = user.last_active
+    if last_active.tzinfo is not None:
+        last_active = last_active.replace(tzinfo=None)
+
+    inactive_time = datetime.utcnow() - last_active
 
     return {
         "falling_behind": inactive_time >= timedelta(days=1)

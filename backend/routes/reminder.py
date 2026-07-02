@@ -4,6 +4,8 @@ from datetime import datetime
 
 from database.database import get_db
 from database.task_models import Task
+from database.models import User
+from utils.jwt_handler import get_current_user
 
 router = APIRouter(
     prefix="/reminder",
@@ -13,10 +15,11 @@ router = APIRouter(
 
 @router.get("/status")
 def reminder_status(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
 
-    tasks = db.query(Task).all()
+    tasks = db.query(Task).filter(Task.user_id == user.id).all()
 
     if not tasks:
         return {

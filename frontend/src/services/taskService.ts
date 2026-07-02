@@ -28,7 +28,7 @@ export const createTask = async (
 ): Promise<Task> => {
 
     const response = await API.post(
-        "/tasks",
+        "/tasks/",
         data,
         getAuthHeader()
     );

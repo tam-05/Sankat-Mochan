@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from database.database import get_db
 from database.task_models import Task
+from database.models import User
+from utils.jwt_handler import get_current_user
 from datetime import datetime, date
 router = APIRouter(
     prefix="/ai",
@@ -93,12 +95,13 @@ Return ONLY JSON.
    
 @router.post("/regenerate-roadmap")
 async def regenerate_roadmap(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
     today = date.today().strftime("%Y-%m-%d")
     latest_task = (
         db.query(Task)
-        .filter(Task.roadmap_id != None)
+        .filter(Task.roadmap_id != None, Task.user_id == user.id)
         .order_by(Task.id.desc())
         .first()
     )
@@ -110,7 +113,7 @@ async def regenerate_roadmap(
 
     tasks = (
         db.query(Task)
-        .filter(Task.roadmap_id == latest_task.roadmap_id)
+        .filter(Task.roadmap_id == latest_task.roadmap_id, Task.user_id == user.id)
         .all()
     )
 
@@ -228,7 +231,7 @@ Rules for due dates:
                         "%Y-%m-%d"
                     ),
                     status="Pending",
-                    user_id=1,
+                    user_id=user.id,
                     roadmap_id=latest_task.roadmap_id,
                     goal=latest_task.goal
                 )
